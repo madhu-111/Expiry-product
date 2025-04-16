@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Seller Dashboard | Local Marketplace</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <style>
+    :root {
+      --primary-color: #3498db;
+      --secondary-color: #2c3e50;
+      --accent-color: #e74c3c;
+      --light-bg: #f8f9fa;
+      --success-color: #2ecc71;
+      --warning-color: #f39c12;
+    }
+    
+    body {
+      background-color: #f4f6f9;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .navbar {
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .navbar-brand {
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    
+    .dashboard-container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+    }
+    
+    .sidebar {
+      background-color: var(--secondary-color);
+      color: white;
+      height: 100%;
+      padding: 2rem 0;
+    }
+    
+    .profile-section {
+      padding: 1.5rem;
+      text-align: center;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      margin-bottom: 1rem;
+    }
+    
+    .profile-icon {
+      font-size: 4rem;
+      color: var(--primary-color);
+      background-color: white;
+      border-radius: 50%;
+      width: 100px;
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+    }
+    
+    .nav-pills .nav-link {
+      color: rgba(255,255,255,0.7);
+      border-radius: 0;
+      padding: 0.8rem 1.5rem;
+      transition: all 0.3s;
+    }
+    
+    .nav-pills .nav-link:hover {
+      background-color: rgba(255,255,255,0.1);
+      color: white;
+    }
+    
+    .nav-pills .nav-link.active {
+      background-color: var(--primary-color);
+      color: white;
+    }
+    
+    .nav-pills .nav-link i {
+      margin-right: 10px;
+      width: 20px;
+      text-align: center;
+    }
+    
+    .main-content {
+      padding: 2rem;
+    }
+    
+    .page-title {
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      color: var(--secondary-color);
+    }
+    
+    .dashboard-card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      transition: transform 0.3s;
+    }
+    
+    .dashboard-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .stat-card {
+      border-left: 4px solid var(--primary-color);
+    }
+    
+    .stat-icon {
+      font-size: 2rem;
+      color: var(--primary-color);
+    }
+    
+    .stat-number {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: var(--secondary-color);
+    }
+    
+    .recent-order {
+      border-bottom: 1px solid #eee;
+      padding: 1rem 0;
+    }
+    
+    .recent-order:last-child {
+      border-bottom: none;
+    }
+    
+    .action-btn {
+      border-radius: 50px;
+      padding: 0.5rem 1.2rem;
+    }
+    
+    .status-badge {
+      padding: 0.35rem 0.75rem;
+      border-radius: 50px;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+    
+    .chart-container {
+      height: 300px;
+      position: relative;
+    }
+    
+    .info-list-item {
+      padding: 0.8rem 1.2rem;
+      border-left: 3px solid var(--primary-color);
+      background-color: #f8f9fa;
+      margin-bottom: 0.5rem;
+      border-radius: 0 5px 5px 0;
+      transition: all 0.3s;
+    }
+    
+    .info-list-item:hover {
+      border-left-width: 5px;
+      background-color: #f1f3f5;
+    }
+    
+    .update-profile-btn {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      padding: 0.6rem 1.5rem;
+      transition: all 0.3s;
+    }
+    
+    .update-profile-btn:hover {
+      background-color: #2980b9;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+    }
+    
+    .logout-btn {
+      color: #e74c3c;
+      border: 1px solid #e74c3c;
+      background: transparent;
+      transition: all 0.3s;
+    }
+    
+    .logout-btn:hover {
+      background-color: #e74c3c;
+      color: white;
+    }
+    
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background-color: rgba(0,0,0,0.2);
+      border-radius: 10px;
+    }
+    
+    /* Mobile responsive */
+    @media (max-width: 768px) {
+      .sidebar {
+        padding: 1rem 0;
+      }
+      
+      .main-content {
+        padding: 1rem;
+      }
+      
+      .profile-section {
+        padding: 1rem;
+      }
+      
+      .profile-icon {
+        width: 80px;
+        height: 80px;
+        font-size: 3rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--secondary-color);">
+    <div class="container">
+      <a class="navbar-brand" href="#">
+        <i class="fas fa-store me-2"></i> LocalMarket
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link active" href="#">Dashboard</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="my_products.html">Products</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="marketplace.html">Marketplace</a>
+          </li>
+        </ul>
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+              <i class="fas fa-bell"></i>
+              <span class="badge rounded-pill bg-danger">3</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><h6 class="dropdown-header">Notifications</h6></li>
+              <li><a class="dropdown-item" href="#">New order received</a></li>
+              <li><a class="dropdown-item" href="#">Product almost out of stock</a></li>
+              <li><a class="dropdown-item" href="#">New marketplace review</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item text-center" href="#">See all notifications</a></li>
+            </ul>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+              <i class="fas fa-user-circle"></i>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><h6 class="dropdown-header">Account</h6></li>
+              <li><a class="dropdown-item" href="#">Profile Settings</a></li>
+              <li><a class="dropdown-item" href="#">Store Settings</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item text-danger" href="#" onclick="logout()">Logout</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Dashboard Content -->
+  <div class="container-fluid py-4">
+    <div class="row">
+      <!-- Left Sidebar -->
+      <div class="col-lg-3 mb-4">
+        <div class="dashboard-container p-0">
+          <div class="sidebar">
+            <div class="profile-section">
+              <div class="profile-icon">
+                <i class="fas fa-user"></i>
+              </div>
+              <h5 class="text-white mb-1" id="sellerName">Seller Name</h5>
+              <p class="text-white-50 small mb-0" id="shopName">Shop Name</p>
+            </div>
+            
+            <div class="px-3 mb-3">
+              <div class="d-grid">
+                <a href="my_products.html" class="btn btn-outline-light btn-sm">
+                  <i class="fas fa-plus me-1"></i> Add New Product
+                </a>
+              </div>
+            </div>
+            
+            <ul class="nav nav-pills flex-column">
+              <li class="nav-item">
+                <a class="nav-link active" href="#">
+                  <i class="fas fa-th-large"></i> Dashboard
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="my_products.html">
+                  <i class="fas fa-box"></i> My Products
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">
+                  <i class="fas fa-shopping-cart"></i> Orders
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">
+                  <i class="fas fa-chart-line"></i> Analytics
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">
+                  <i class="fas fa-comment"></i> Reviews
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">
+                  <i class="fas fa-cog"></i> Settings
+                </a>
+              </li>
+            </ul>
+            
+            <div class="mt-auto pt-3 px-3">
+              <div class="d-grid">
+                <button class="btn logout-btn" onclick="logout()">
+                  <i class="fas fa-sign-out-alt me-2"></i> Logout
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Main Content -->
+      <div class="col-lg-9">
+        <div class="dashboard-container">
+          <div class="main-content">
+            <h2 class="page-title">Dashboard</h2>
+            
+            <!-- Stats Row -->
+            <div class="row mb-4">
+              <div class="col-md-4 mb-3">
+                <div class="dashboard-card stat-card">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <h6 class="text-muted mb-1">Total Products</h6>
+                      <div class="stat-number" id="totalProducts">0</div>
+                    </div>
+                    <div class="stat-icon">
+                      <i class="fas fa-box"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="dashboard-card stat-card" style="border-left-color: #e74c3c;">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <h6 class="text-muted mb-1">Total Orders</h6>
+                      <div class="stat-number">0</div>
+                    </div>
+                    <div class="stat-icon" style="color: #e74c3c;">
+                      <i class="fas fa-shopping-cart"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="dashboard-card stat-card" style="border-left-color: #2ecc71;">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <h6 class="text-muted mb-1">Revenue</h6>
+                      <div class="stat-number">₹.00</div>
+                    </div>
+                    <div class="stat-icon" style="color: #2ecc71;">
+                      <i class="fas fa-rupee-sign"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="row d-flex flex-row justify-content-center">
+              <!-- Profile Info -->
+              <div class="col-lg-6 mb-4">
+                <div class="dashboard-card h-100">
+                  <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0">Profile Information</h5>
+                    <button class="btn update-profile-btn btn-sm">
+                      <i class="fas fa-edit me-1"></i> Update
+                    </button>
+                  </div>
+                  
+                  <div class="info-list">
+                    <div class="info-list-item">
+                      <div class="row align-items-center">
+                        <div class="col-4">
+                          <span class="text-muted">Owner Name</span>
+                        </div>
+                        <div class="col-8">
+                          <span class="fw-medium" id="ownerName">John Doe</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="info-list-item">
+                      <div class="row align-items-center">
+                        <div class="col-4">
+                          <span class="text-muted">Email</span>
+                        </div>
+                        <div class="col-8">
+                          <span class="fw-medium" id="email">example@email.com</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="info-list-item">
+                      <div class="row align-items-center">
+                        <div class="col-4">
+                          <span class="text-muted">Phone</span>
+                        </div>
+                        <div class="col-8">
+                          <span class="fw-medium" id="phone">(123) 456-7890</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="info-list-item">
+                      <div class="row align-items-center">
+                        <div class="col-4">
+                          <span class="text-muted">Address</span>
+                        </div>
+                        <div class="col-8">
+                          <span class="fw-medium" id="address">123 Market St, City</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="info-list-item">
+                      <div class="row align-items-center">
+                        <div class="col-4">
+                          <span class="text-muted">Member Since</span>
+                        </div>
+                        <div class="col-8">
+                          <span class="fw-medium">June 2023</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Recent Orders -->
+              <!-- <div class="col-lg-6 mb-4">
+                <div class="dashboard-card h-100">
+                  <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0">Recent Orders</h5>
+                    <a href="#" class="btn btn-sm btn-outline-primary">View All</a>
+                  </div>
+                  
+                  <div class="recent-orders">
+                    <div class="recent-order">
+                      <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                          <h6 class="mb-1">Order #12345</h6>
+                          <p class="text-muted small mb-0">April 10, 2023</p>
+                        </div>
+                        <span class="status-badge bg-success">Delivered</span>
+                      </div>
+                      <div class="d-flex justify-content-between align-items-center mt-2">
+                        <span>3 items</span>
+                        <span class="fw-bold">$45.80</span>
+                      </div>
+                    </div>
+                    <div class="recent-order">
+                      <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                          <h6 class="mb-1">Order #12344</h6>
+                          <p class="text-muted small mb-0">April 8, 2023</p>
+                        </div>
+                        <span class="status-badge bg-warning text-dark">Shipped</span>
+                      </div>
+                      <div class="d-flex justify-content-between align-items-center mt-2">
+                        <span>1 item</span>
+                        <span class="fw-bold">$12.50</span>
+                      </div>
+                    </div>
+                    <div class="recent-order">
+                      <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                          <h6 class="mb-1">Order #12342</h6>
+                          <p class="text-muted small mb-0">April 5, 2023</p>
+                        </div>
+                        <span class="status-badge bg-success">Delivered</span>
+                      </div>
+                      <div class="d-flex justify-content-between align-items-center mt-2">
+                        <span>2 items</span>
+                        <span class="fw-bold">$28.75</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div> -->
+            
+            <!-- Quick Actions -->
+            <div class="row mb-4">
+              <div class="col-12">
+                <div class="dashboard-card">
+                  <h5 class="mb-3">Quick Actions</h5>
+                  <div class="row">
+                    <div class="col-md-3 col-6 mb-3 mb-md-0">
+                      <a href="my_products.html" class="btn btn-light d-block py-3 h-100">
+                        <i class="fas fa-plus fa-lg mb-2"></i>
+                        <div>Add Product</div>
+                      </a>
+                    </div>
+                    <div class="col-md-3 col-6 mb-3 mb-md-0">
+                      <a href="#" class="btn btn-light d-block py-3 h-100">
+                        <i class="fas fa-tag fa-lg mb-2"></i>
+                        <div>Add Promotion</div>
+                      </a>
+                    </div>
+                    <div class="col-md-3 col-6">
+                      <a href="#" class="btn btn-light d-block py-3 h-100">
+                        <i class="fas fa-chart-pie fa-lg mb-2"></i>
+                        <div>View Reports</div>
+                      </a>
+                    </div>
+                    <div class="col-md-3 col-6">
+                      <a href="#" class="btn btn-light d-block py-3 h-100">
+                        <i class="fas fa-question-circle fa-lg mb-2"></i>
+                        <div>Get Help</div>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Latest Reviews -->
+            <!-- <div class="row">
+              <div class="col-12">
+                <div class="dashboard-card">
+                  <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0">Latest Reviews</h5>
+                    <a href="#" class="btn btn-sm btn-outline-primary">View All</a>
+                  </div>
+                  
+                  <div class="table-responsive">
+                    <table class="table table-hover">
+                      <thead>
+                        <tr>
+                          <th>Product</th>
+                          <th>Customer</th>
+                          <th>Rating</th>
+                          <th>Comment</th>
+                          <th>Date</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>Organic Apples</td>
+                          <td>Alex Johnson</td>
+                          <td>
+                            <div class="text-warning">
+                              <i class="fas fa-star"></i>
+                              <i class="fas fa-star"></i>
+                              <i class="fas fa-star"></i>
+                              <i class="fas fa-star"></i>
+                              <i class="fas fa-star"></i>
+                            </div>
+                          </td>
+                          <td>Very fresh and delicious!</td>
+                          <td>Apr 11, 2023</td>
+                        </tr>
+                        <tr>
+                          <td>Farm Fresh Eggs</td>
+                          <td>Sarah Williams</td>
+                          <td>
+                            <div class="text-warning">
+                              <i class="fas fa-star"></i>
+                              <i class="fas fa-star"></i>
+                              <i class="fas fa-star"></i>
+                              <i class="fas fa-star"></i>
+                              <i class="far fa-star"></i>
+                            </div>
+                          </td>
+                          <td>Good quality, will buy again.</td>
+                          <td>Apr 9, 2023</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div> -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-dark text-white py-4 mt-auto">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <h5><i class="fas fa-store me-2"></i>LocalMarket</h5>
+          <p class="small">Connecting local sellers with local buyers.</p>
+        </div>
+        <div class="col-md-3">
+          <h6>Quick Links</h6>
+          <ul class="list-unstyled">
+            <li><a href="#" class="text-white-50">Help Center</a></li>
+            <li><a href="#" class="text-white-50">Terms of Service</a></li>
+            <li><a href="#" class="text-white-50">Privacy Policy</a></li>
+          </ul>
+        </div>
+        <div class="col-md-3">
+          <h6>Contact</h6>
+          <ul class="list-unstyled text-white-50">
+            <li><i class="fas fa-envelope me-2"></i>support@localmarket.com</li>
+            <li><i class="fas fa-phone me-2"></i>(123) 456-7890</li>
+          </ul>
+        </div>
+      </div>
+      <div class="text-center mt-3 pt-3 border-top border-secondary">
+        <p class="mb-0">&copy; 2023 LocalMarket. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Get seller data from localStorage
+    const sellerData = JSON.parse(localStorage.getItem('sellerData'));
+
+    if (!sellerData) {
+      alert('Unauthorized access. Please log in.');
+      window.location.href = 'seller_login.html';
+    } else {
+      // Populate seller info
+      document.querySelectorAll('#sellerName').forEach(el => {
+        el.textContent = sellerData.shopName || 'Seller';
+      });
+      document.querySelectorAll('#shopName').forEach(el => {
+        el.textContent = sellerData.shopName || 'My Shop';
+      });
+      document.getElementById('ownerName').textContent = sellerData.sellerName || 'N/A';
+      document.getElementById('email').textContent = sellerData.email || 'N/A';
+      document.getElementById('phone').textContent = sellerData.contact || 'N/A';
+      document.getElementById('address').textContent = sellerData.location || 'N/A';
+      
+      // Get product count
+      const products = JSON.parse(localStorage.getItem('sellerProducts_' + sellerData.email)) || [];
+      document.getElementById('totalProducts').textContent = products.length;
+    }
+
+    function logout() {
+      localStorage.removeItem('sellerData');
+      window.location.href = 'seller_login.html';
+    }
+  </script>
+</body>
+</html>
