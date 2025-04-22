@@ -79,7 +79,6 @@
   </style>
 </head>
 <body>
-
   <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #2c3e50;">
     <div class="container">
@@ -92,7 +91,7 @@
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link" href="seller_dashboard.html">Dashboard</a>
+            <a class="nav-link" href="Profile.html">Dashboard</a>
           </li>
           <li class="nav-item">
             <a class="nav-link active" href="my_products.html">My Products</a>
@@ -144,7 +143,6 @@
         <!-- Active Products Tab -->
         <div class="tab-pane fade show active" id="active" role="tabpanel">
           <div class="row" id="activeProductsContainer">
-            <!-- Products will be populated here -->
             <div class="text-center py-5 text-muted" id="noActiveProducts">
               <i class="fas fa-box-open fa-3x mb-3"></i>
               <h5>No active products to display</h5>
@@ -156,7 +154,6 @@
         <!-- Out of Stock Tab -->
         <div class="tab-pane fade" id="out-of-stock" role="tabpanel">
           <div class="row" id="outOfStockProductsContainer">
-            <!-- Out of stock products will be populated here -->
             <div class="text-center py-5 text-muted" id="noOutOfStockProducts">
               <i class="fas fa-check-circle fa-3x mb-3"></i>
               <h5>No out of stock products</h5>
@@ -169,66 +166,9 @@
   </div>
 
   <!-- Add Product Button -->
-  <button class="btn btn-primary btn-float" data-bs-toggle="modal" data-bs-target="#addProductModal">
+  <a href="add_product.html" class="btn btn-primary btn-float">
     <i class="fas fa-plus"></i>
-  </button>
-
-  <!-- Add Product Modal -->
-  <div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="addProductModalLabel">Add New Product</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form id="addProductForm">
-            <div class="mb-3">
-              <label for="productName" class="form-label">Product Name</label>
-              <input type="text" class="form-control" id="productName" required>
-            </div>
-            <div class="mb-3">
-              <label for="productDescription" class="form-label">Description</label>
-              <textarea class="form-control" id="productDescription" rows="3" required></textarea>
-            </div>
-            <div class="row mb-3">
-              <div class="col">
-                <label for="productPrice" class="form-label">Price ($)</label>
-                <input type="number" class="form-control" id="productPrice" min="0.01" step="0.01" required>
-              </div>
-              <div class="col">
-                <label for="productQuantity" class="form-label">Quantity</label>
-                <input type="number" class="form-control" id="productQuantity" min="1" required>
-              </div>
-            </div>
-            <div class="mb-3">
-              <label for="productCategory" class="form-label">Category</label>
-              <select class="form-select" id="productCategory" required>
-                <option value="">Select category</option>
-                <option value="Fruits & Vegetables">Fruits & Vegetables</option>
-                <option value="Dairy & Eggs">Dairy & Eggs</option>
-                <option value="Bakery">Bakery</option>
-                <option value="Meat & Seafood">Meat & Seafood</option>
-                <option value="Snacks">Snacks</option>
-                <option value="Beverages">Beverages</option>
-                <option value="Household">Household</option>
-                <option value="Others">Others</option>
-              </select>
-            </div>
-            <div class="mb-3">
-              <label for="productImage" class="form-label">Product Image URL</label>
-              <input type="text" class="form-control" id="productImage" placeholder="Enter image URL" required>
-              <small class="text-muted">Enter a URL for the product image</small>
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-primary" id="saveProductBtn">Add Product</button>
-        </div>
-      </div>
-    </div>
-  </div>
+  </a>
 
   <!-- Edit Product Modal -->
   <div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel" aria-hidden="true">
@@ -310,11 +250,12 @@
   <!-- Footer -->
   <footer class="bg-dark text-white py-3 mt-5">
     <div class="container text-center">
-      <p>&copy; 2023 LocalMarket. All rights reserved.</p>
+      <p>© 2023 LocalMarket. All rights reserved.</p>
     </div>
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
     // Check if user is logged in
     const sellerData = JSON.parse(localStorage.getItem('sellerData'));
@@ -323,14 +264,28 @@
       window.location.href = 'seller_login.html';
     }
 
-    // Product management
-    let products = JSON.parse(localStorage.getItem('sellerProducts_' + sellerData.email)) || [];
-    let currentProductId = null;
+    let products = [];
 
     // Initialize the page
     function initPage() {
-      displayProducts();
-      updateProductCount();
+      fetchProducts();
+    }
+
+    // Fetch products from backend
+    function fetchProducts() {
+      $.ajax({
+        url: `/api/products/seller/${sellerData.email}`,
+        method: 'GET',
+        success: function(response) {
+          products = response;
+          displayProducts();
+          updateProductCount();
+        },
+        error: function(error) {
+          console.error('Error fetching products:', error);
+          alert('Failed to load products. Please try again.');
+        }
+      });
     }
 
     // Display products
@@ -338,14 +293,12 @@
       const activeProductsContainer = document.getElementById('activeProductsContainer');
       const outOfStockProductsContainer = document.getElementById('outOfStockProductsContainer');
       
-      // Clear containers
       activeProductsContainer.innerHTML = '';
       outOfStockProductsContainer.innerHTML = '';
       
       let hasActiveProducts = false;
       let hasOutOfStockProducts = false;
       
-      // Display each product
       products.forEach(product => {
         const productCard = createProductCard(product);
         
@@ -358,7 +311,6 @@
         }
       });
       
-      // Show/hide "no products" messages
       document.getElementById('noActiveProducts').style.display = hasActiveProducts ? 'none' : 'block';
       document.getElementById('noOutOfStockProducts').style.display = hasOutOfStockProducts ? 'none' : 'block';
     }
@@ -414,100 +366,34 @@
       document.getElementById('productCount').textContent = products.length + ' Products';
     }
 
-    // Change product quantity
+    // Change product quantity via API
     function changeQuantity(productId, amount) {
       const productIndex = products.findIndex(p => p.id === productId);
       if (productIndex !== -1) {
         const newQuantity = products[productIndex].quantity + amount;
         if (newQuantity >= 0) {
-          products[productIndex].quantity = newQuantity;
-          saveProducts();
-          displayProducts();
-        }
-      }
-    }
-
-    // Save products to localStorage
-    function saveProducts() {
-      localStorage.setItem('sellerProducts_' + sellerData.email, JSON.stringify(products));
-      
-      // Also update marketplace products
-      const marketplaceProducts = JSON.parse(localStorage.getItem('marketplaceProducts')) || [];
-      
-      // Update seller's products in marketplace
-      products.forEach(product => {
-        const marketplaceIndex = marketplaceProducts.findIndex(p => p.id === product.id);
-        
-        if (marketplaceIndex !== -1) {
-          // Update existing product
-          marketplaceProducts[marketplaceIndex] = {
-            ...product,
-            sellerName: sellerData.shopName,
-            sellerLocation: sellerData.location
-          };
-        } else {
-          // Add new product to marketplace
-          marketplaceProducts.push({
-            ...product,
-            sellerName: sellerData.shopName,
-            sellerLocation: sellerData.location
+          $.ajax({
+            url: `/api/products/${productId}`,
+            method: 'PUT',
+            contentType: 'application/json',
+            data: JSON.stringify({ quantity: newQuantity }),
+            success: function(response) {
+              products[productIndex].quantity = newQuantity;
+              displayProducts();
+            },
+            error: function(error) {
+              console.error('Error updating quantity:', error);
+              alert('Failed to update quantity. Please try again.');
+            }
           });
         }
-      });
-      
-      // Remove products that were deleted by seller
-      const remainingProducts = marketplaceProducts.filter(
-        p => p.sellerName !== sellerData.shopName || products.some(sp => sp.id === p.id)
-      );
-      
-      localStorage.setItem('marketplaceProducts', JSON.stringify(remainingProducts));
-    }
-
-    // Generate unique ID
-    function generateProductId() {
-      return 'prod_' + Math.random().toString(36).substr(2, 9);
-    }
-
-    // Add new product
-    function addProduct() {
-      const productName = document.getElementById('productName').value;
-      const productDescription = document.getElementById('productDescription').value;
-      const productPrice = parseFloat(document.getElementById('productPrice').value);
-      const productQuantity = parseInt(document.getElementById('productQuantity').value);
-      const productCategory = document.getElementById('productCategory').value;
-      const productImage = document.getElementById('productImage').value;
-      
-      if (!productName || !productDescription || isNaN(productPrice) || isNaN(productQuantity) || !productCategory) {
-        alert('Please fill all required fields.');
-        return;
       }
-      
-      const newProduct = {
-        id: generateProductId(),
-        name: productName,
-        description: productDescription,
-        price: productPrice,
-        quantity: productQuantity,
-        category: productCategory,
-        image: productImage,
-        sellerId: sellerData.email
-      };
-      
-      products.push(newProduct);
-      saveProducts();
-      displayProducts();
-      updateProductCount();
-      
-      // Clear form and close modal
-      document.getElementById('addProductForm').reset();
-      bootstrap.Modal.getInstance(document.getElementById('addProductModal')).hide();
     }
 
     // Edit product
     function editProduct(productId) {
       const product = products.find(p => p.id === productId);
       if (product) {
-        // Populate form with product details
         document.getElementById('editProductId').value = product.id;
         document.getElementById('editProductName').value = product.name;
         document.getElementById('editProductDescription').value = product.description;
@@ -516,35 +402,41 @@
         document.getElementById('editProductCategory').value = product.category;
         document.getElementById('editProductImage').value = product.image;
         
-        // Show modal
         const editModal = new bootstrap.Modal(document.getElementById('editProductModal'));
         editModal.show();
       }
     }
 
-    // Update product
+    // Update product via API
     function updateProduct() {
       const productId = document.getElementById('editProductId').value;
-      const productIndex = products.findIndex(p => p.id === productId);
-      
-      if (productIndex !== -1) {
-        // Update product
-        products[productIndex] = {
-          ...products[productIndex],
-          name: document.getElementById('editProductName').value,
-          description: document.getElementById('editProductDescription').value,
-          price: parseFloat(document.getElementById('editProductPrice').value),
-          quantity: parseInt(document.getElementById('editProductQuantity').value),
-          category: document.getElementById('editProductCategory').value,
-          image: document.getElementById('editProductImage').value
-        };
-        
-        saveProducts();
-        displayProducts();
-        
-        // Close modal
-        bootstrap.Modal.getInstance(document.getElementById('editProductModal')).hide();
-      }
+      const productData = {
+        name: document.getElementById('editProductName').value,
+        description: document.getElementById('editProductDescription').value,
+        price: parseFloat(document.getElementById('editProductPrice').value),
+        quantity: parseInt(document.getElementById('editProductQuantity').value),
+        category: document.getElementById('editProductCategory').value,
+        image: document.getElementById('editProductImage').value
+      };
+
+      $.ajax({
+        url: `/api/products/${productId}`,
+        method: 'PUT',
+        contentType: 'application/json',
+        data: JSON.stringify(productData),
+        success: function(response) {
+          const productIndex = products.findIndex(p => p.id === productId);
+          if (productIndex !== -1) {
+            products[productIndex] = response;
+            displayProducts();
+          }
+          bootstrap.Modal.getInstance(document.getElementById('editProductModal')).hide();
+        },
+        error: function(error) {
+          console.error('Error updating product:', error);
+          alert('Failed to update product. Please try again.');
+        }
+      });
     }
 
     // Show delete confirmation
@@ -559,16 +451,24 @@
       }
     }
 
-    // Delete product
+    // Delete product via API
     function deleteProduct() {
       if (currentProductId) {
-        products = products.filter(p => p.id !== currentProductId);
-        saveProducts();
-        displayProducts();
-        updateProductCount();
-        
-        bootstrap.Modal.getInstance(document.getElementById('deleteConfirmModal')).hide();
-        currentProductId = null;
+        $.ajax({
+          url: `/api/products/${currentProductId}`,
+          method: 'DELETE',
+          success: function(response) {
+            products = products.filter(p => p.id !== currentProductId);
+            displayProducts();
+            updateProductCount();
+            bootstrap.Modal.getInstance(document.getElementById('deleteConfirmModal')).hide();
+            currentProductId = null;
+          },
+          error: function(error) {
+            console.error('Error deleting product:', error);
+            alert('Failed to delete product. Please try again.');
+          }
+        });
       }
     }
 
@@ -581,12 +481,11 @@
     // Event listeners
     document.addEventListener('DOMContentLoaded', () => {
       initPage();
-      
-      // Add event listeners for buttons
-      document.getElementById('saveProductBtn').addEventListener('click', addProduct);
       document.getElementById('updateProductBtn').addEventListener('click', updateProduct);
       document.getElementById('confirmDeleteBtn').addEventListener('click', deleteProduct);
     });
+
+    let currentProductId = null;
   </script>
 </body>
 </html>
